@@ -1,0 +1,35 @@
+# surajk-plugin .gitignore
+
+# Generated mesh/model output
+output/*.obj
+output/*.mtl
+output/*.skp
+output/*.png
+output/*.jpg
+
+# AI model weight files (can be hundreds of MB)
+engine/models/*.pth
+engine/models/*.ckpt
+engine/models/*.pt
+engine/models/*.onnx
+engine/models/*.bin
+engine/models/*.safetensors
+engine/models/*.h5
+engine/models/*.pkl
+
+# Bundled Python runtime (user-provided)
+engine/python/
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+.pytest_cache/
+
+# OS / editor artefacts
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+.vscode/
+.idea/
