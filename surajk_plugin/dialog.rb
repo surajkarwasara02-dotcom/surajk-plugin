@@ -8,6 +8,7 @@
 #   2. User clicks "Convert to 3D" → Ruby runs the Python engine, imports
 #      the generated OBJ, and saves as .skp, streaming status back to HTML.
 
+require 'json'
 require_relative 'config'
 require_relative 'importer'
 
@@ -51,8 +52,7 @@ module SurajkPlugin
       dlg.add_action_callback('select_image') do |_action_context|
         path = UI.openpanel('Select furniture image', '', Config::IMAGE_FILTER)
         if path
-          safe = path.gsub('\\', '\\\\\\\\').gsub("'", "\\'")
-          dlg.execute_script("setImagePath('#{safe}')")
+          dlg.execute_script("setImagePath(#{path.to_json})")
         end
       end
 
@@ -146,11 +146,9 @@ module SurajkPlugin
     # Send a status update to the dialog's JS statusUpdate() function.
     # level: :info | :success | :error
     def self.send_status(dlg, level, message)
-      safe_msg = message.to_s
-                        .gsub('\\', '\\\\\\\\')
-                        .gsub("'", "\\'")
-                        .gsub("\n", '\\n')
-      dlg.execute_script("statusUpdate('#{level}', '#{safe_msg}')")
+      dlg.execute_script(
+        "statusUpdate(#{level.to_s.to_json}, #{message.to_s.to_json})"
+      )
     end
     private_class_method :send_status
   end

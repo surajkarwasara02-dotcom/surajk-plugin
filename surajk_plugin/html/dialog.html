@@ -238,8 +238,8 @@
       var preview = document.getElementById('previewImg');
       var wrap    = document.getElementById('previewWrap');
       if (path) {
-        // Convert Windows backslashes and encode for URL.
-        var url = 'file:///' + path.replace(/\\/g, '/').replace(/ /g, '%20');
+        // Normalise Windows backslashes to forward slashes then encode.
+        var url = 'file:///' + encodeURI(path.replace(/\\/g, '/'));
         preview.src = url;
         preview.onerror = function() { wrap.style.display = 'none'; };
         preview.onload  = function() { wrap.style.display = 'flex'; };

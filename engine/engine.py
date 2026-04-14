@@ -137,7 +137,7 @@ def main() -> int:
     t0 = time.time()
     try:
         vertices, faces = generate(str(image_path))
-    except Exception as exc:  # noqa: BLE001
+    except (FileNotFoundError, ValueError, OSError, RuntimeError) as exc:
         print(f"[ERROR] Mesh generation failed: {exc}", file=sys.stderr)
         return 1
 
