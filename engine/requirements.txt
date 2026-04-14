@@ -1,0 +1,34 @@
+# engine/requirements.txt
+#
+# Python dependencies for the surajk plugin AI engine.
+#
+# The PLACEHOLDER stub (engine/mesh_generator.py default) has NO external
+# dependencies — only the Python standard library is required.
+#
+# When you drop in a real AI model (see engine/models/README.txt) you will
+# likely need some of the packages listed below.  Uncomment and pin versions
+# as needed, then run:
+#
+#   pip install -r requirements.txt
+#
+# inside your Python environment (or the bundled runtime at engine/python/).
+
+# ---------------------------------------------------------------------------
+# Numerical / image processing (uncomment if needed by your model)
+# ---------------------------------------------------------------------------
+# numpy>=1.23.0
+# Pillow>=9.0.0
+# opencv-python-headless>=4.7.0
+
+# ---------------------------------------------------------------------------
+# Deep-learning runtimes (uncomment the one you use)
+# ---------------------------------------------------------------------------
+# torch>=2.0.0          # PyTorch CPU build
+# torchvision>=0.15.0
+# onnxruntime>=1.15.0   # ONNX Runtime (lighter, CPU-only)
+
+# ---------------------------------------------------------------------------
+# 3D / mesh utilities (uncomment if needed)
+# ---------------------------------------------------------------------------
+# trimesh>=3.22.0
+# open3d>=0.17.0

@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>surajk plugin — Image → 3D</title>
+  <style>
+    /* ------------------------------------------------------------------ */
+    /* Reset & base                                                         */
+    /* ------------------------------------------------------------------ */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Segoe UI', Arial, sans-serif;
+      background: #1e1e2e;
+      color: #cdd6f4;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      min-height: 100vh;
+      padding: 20px 16px 16px;
+      gap: 14px;
+    }
+
+    /* ------------------------------------------------------------------ */
+    /* Header                                                               */
+    /* ------------------------------------------------------------------ */
+    header {
+      text-align: center;
+      width: 100%;
+    }
+    header h1 {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: #cba6f7;
+      letter-spacing: 0.03em;
+    }
+    header p.tagline {
+      font-size: 0.78rem;
+      color: #a6adc8;
+      margin-top: 2px;
+    }
+
+    /* ------------------------------------------------------------------ */
+    /* Card                                                                 */
+    /* ------------------------------------------------------------------ */
+    .card {
+      background: #313244;
+      border-radius: 10px;
+      padding: 18px 20px;
+      width: 100%;
+      max-width: 440px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.35);
+    }
+
+    /* ------------------------------------------------------------------ */
+    /* Image selector row                                                   */
+    /* ------------------------------------------------------------------ */
+    .image-row {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+    #imagePath {
+      flex: 1;
+      background: #1e1e2e;
+      border: 1px solid #45475a;
+      border-radius: 6px;
+      padding: 7px 10px;
+      font-size: 0.82rem;
+      color: #cdd6f4;
+      outline: none;
+      cursor: default;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+    }
+    #imagePath::placeholder { color: #585b70; }
+
+    /* ------------------------------------------------------------------ */
+    /* Buttons                                                              */
+    /* ------------------------------------------------------------------ */
+    button {
+      border: none;
+      border-radius: 6px;
+      padding: 8px 16px;
+      font-size: 0.84rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.15s, transform 0.08s;
+      white-space: nowrap;
+    }
+    button:active { transform: scale(0.97); }
+
+    #btnBrowse {
+      background: #89b4fa;
+      color: #1e1e2e;
+    }
+    #btnBrowse:hover { background: #74c7ec; }
+
+    #btnConvert {
+      background: #a6e3a1;
+      color: #1e1e2e;
+      width: 100%;
+      padding: 10px;
+      font-size: 0.9rem;
+    }
+    #btnConvert:hover { background: #94e2d5; }
+    #btnConvert:disabled {
+      background: #45475a;
+      color: #6c7086;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    /* ------------------------------------------------------------------ */
+    /* Preview thumbnail                                                    */
+    /* ------------------------------------------------------------------ */
+    #previewWrap {
+      display: none;
+      justify-content: center;
+    }
+    #previewImg {
+      max-width: 100%;
+      max-height: 120px;
+      border-radius: 6px;
+      border: 2px solid #45475a;
+      object-fit: contain;
+    }
+
+    /* ------------------------------------------------------------------ */
+    /* Status area                                                          */
+    /* ------------------------------------------------------------------ */
+    #statusBox {
+      min-height: 54px;
+      background: #1e1e2e;
+      border: 1px solid #45475a;
+      border-radius: 6px;
+      padding: 10px 12px;
+      font-size: 0.8rem;
+      line-height: 1.5;
+      white-space: pre-wrap;
+      word-break: break-all;
+      color: #a6adc8;
+    }
+    #statusBox.info    { color: #89b4fa; border-color: #89b4fa44; }
+    #statusBox.success { color: #a6e3a1; border-color: #a6e3a144; }
+    #statusBox.error   { color: #f38ba8; border-color: #f38ba844; }
+
+    /* ------------------------------------------------------------------ */
+    /* Spinner                                                              */
+    /* ------------------------------------------------------------------ */
+    .spinner {
+      display: none;
+      width: 22px; height: 22px;
+      border: 3px solid #45475a;
+      border-top-color: #cba6f7;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin: 0 auto;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ------------------------------------------------------------------ */
+    /* Footer note                                                          */
+    /* ------------------------------------------------------------------ */
+    .note {
+      font-size: 0.72rem;
+      color: #585b70;
+      text-align: center;
+      width: 100%;
+      max-width: 440px;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>surajk plugin — Image → 3D</h1>
+    <p class="tagline">Convert a single furniture photo to an approximate 3D model (offline)</p>
+  </header>
+
+  <div class="card">
+
+    <!-- Image selector -->
+    <div class="image-row">
+      <input id="imagePath" type="text" readonly placeholder="No image selected…" />
+      <button id="btnBrowse" onclick="selectImage()">Browse…</button>
+    </div>
+
+    <!-- Preview -->
+    <div id="previewWrap">
+      <img id="previewImg" src="" alt="Selected image preview" />
+    </div>
+
+    <!-- Convert button -->
+    <button id="btnConvert" disabled onclick="convertTo3D()">
+      Image → 3D
+    </button>
+
+    <!-- Spinner -->
+    <div id="spinner" class="spinner"></div>
+
+    <!-- Status -->
+    <div id="statusBox">Ready. Select a JPG or PNG furniture photo to begin.</div>
+
+  </div>
+
+  <p class="note">
+    ⚠ Output is an <em>approximate</em> model from a single photo — not photogrammetry-accurate.
+    A real AI model can be placed in <code>engine/models/</code>.
+  </p>
+
+  <script>
+    /* ------------------------------------------------------------------ */
+    /* State                                                                */
+    /* ------------------------------------------------------------------ */
+    var currentImagePath = '';
+    var busy = false;
+
+    /* ------------------------------------------------------------------ */
+    /* Called by Ruby: set the chosen image path and update the UI.        */
+    /* ------------------------------------------------------------------ */
+    function setImagePath(path) {
+      currentImagePath = path;
+      var field = document.getElementById('imagePath');
+      field.value = path;
+      field.title = path;
+
+      // Enable the convert button only when a path is set.
+      document.getElementById('btnConvert').disabled = !path || busy;
+
+      // Show a preview using a file:/// URL.
+      var preview = document.getElementById('previewImg');
+      var wrap    = document.getElementById('previewWrap');
+      if (path) {
+        // Convert Windows backslashes and encode for URL.
+        var url = 'file:///' + path.replace(/\\/g, '/').replace(/ /g, '%20');
+        preview.src = url;
+        preview.onerror = function() { wrap.style.display = 'none'; };
+        preview.onload  = function() { wrap.style.display = 'flex'; };
+        wrap.style.display = 'flex';
+      } else {
+        wrap.style.display = 'none';
+      }
+    }
+
+    /* ------------------------------------------------------------------ */
+    /* Called by Ruby: update the status box.                              */
+    /* level: 'info' | 'success' | 'error'                                */
+    /* ------------------------------------------------------------------ */
+    function statusUpdate(level, message) {
+      var box = document.getElementById('statusBox');
+      box.className = level;
+      box.textContent = message;
+
+      var isFinished = (level === 'success' || level === 'error');
+      document.getElementById('spinner').style.display = isFinished ? 'none' : 'block';
+      busy = !isFinished;
+      document.getElementById('btnBrowse').disabled  = busy;
+      document.getElementById('btnConvert').disabled = busy || !currentImagePath;
+    }
+
+    /* ------------------------------------------------------------------ */
+    /* Button handlers                                                      */
+    /* ------------------------------------------------------------------ */
+    function selectImage() {
+      if (busy) return;
+      sketchup.select_image();
+    }
+
+    function convertTo3D() {
+      if (busy || !currentImagePath) return;
+
+      busy = true;
+      document.getElementById('btnConvert').disabled = true;
+      document.getElementById('btnBrowse').disabled  = true;
+      document.getElementById('spinner').style.display = 'block';
+      statusUpdate('info', 'Starting conversion…');
+
+      sketchup.convert_to_3d(currentImagePath);
+    }
+  </script>
+
+</body>
+</html>
